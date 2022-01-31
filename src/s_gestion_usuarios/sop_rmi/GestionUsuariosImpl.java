@@ -31,13 +31,14 @@ public class GestionUsuariosImpl extends UnicastRemoteObject implements GestionU
         System.out.println("\tRegistro de usuarios");
         System.out.println("==========================================================");
 
-        // objCllBck.informarIngreso(objUsuario.getNombreCompleto(), objUsuario.getId());
+        objCllBck.informarIngreso(objUsuario.getNombreCompleto(), objUsuario.getId());
 
         try {
-            OutputStream output = new FileOutputStream(ARCHIVO_USUARIOS);
-            ObjectOutputStream objectOutput = new ObjectOutputStream(output);
-            objectOutput.writeObject(objUsuario);
-            objectOutput.close();
+            FileOutputStream ficheroSalida = new FileOutputStream(ARCHIVO_USUARIOS);
+            ObjectOutputStream objetoSalida = new ObjectOutputStream(ficheroSalida);
+            objetoSalida.writeObject(objUsuario);
+
+            objetoSalida.close();
             System.out.println("-----------Usuario registrado----------- \n \t identificación: " + objUsuario.getId() + ",\n \t  nombres: " + objUsuario.getNombreCompleto());
             return true;
         } catch (Exception e) {
@@ -54,12 +55,12 @@ public class GestionUsuariosImpl extends UnicastRemoteObject implements GestionU
         System.out.println("==========================================================");
 
         try {
-            InputStream input = new FileInputStream(ARCHIVO_USUARIOS);
-            ObjectInputStream objectInput = new ObjectInputStream(input);
-            usuarios = (ArrayList<UsuarioDTO>) objectInput.readObject();
 
-            objectInput.close();
-            System.out.println(usuarios);
+            FileInputStream ficheroEntrada = new FileInputStream(ARCHIVO_USUARIOS);
+            ObjectInputStream objetoEntrada = new ObjectInputStream(ficheroEntrada); 
+
+            usuarios.add((UsuarioDTO)objetoEntrada.readObject());
+            objetoEntrada.close();
 
             for(UsuarioDTO tmpUsuarioDTO : usuarios){
                 if(tmpUsuarioDTO.getId() == id){

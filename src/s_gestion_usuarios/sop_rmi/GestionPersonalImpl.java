@@ -42,15 +42,7 @@ public class GestionPersonalImpl extends UnicastRemoteObject implements GestionP
 
     @Override
     public int abrirSesion(CredencialDTO objCredencial) throws RemoteException{
-        // Optional<PersonalDTO> auxPersonal = ocupacionBuscadaCredenciales(objCredencial);
 
-        // if(!auxPersonal.isPresent()){
-        //     return -1;
-        // }
-
-        // PersonalDTO tmpPersonalDTO = auxPersonal.get();
-
-        // String ocupacion = tmpPersonalDTO.getOcupacion();
         PersonalDTO tmpPersonalDTO = ocupacionBuscadaCredenciales(objCredencial);
 
         String ocupacion = tmpPersonalDTO.getOcupacion();
@@ -98,7 +90,9 @@ public class GestionPersonalImpl extends UnicastRemoteObject implements GestionP
         System.out.println("\tEdición de personal");
         System.out.println("==================================================");
         int position = -1;
-        position = personalPosition(id);
+        
+        position = IdUsuarioExiste(id);
+        System.out.println("esta es la posicion"+position);
         if(position != -1){
             personal.set(position, objPersonalNuevosDatos);
             return true;
@@ -112,7 +106,7 @@ public class GestionPersonalImpl extends UnicastRemoteObject implements GestionP
         System.out.println("\tAdministrador - Consulta de personal");
         System.out.println("==================================================");
         int position = -1;
-        position = personalPosition(id);
+        position = IdUsuarioExiste(id);
         if(position != -1){
             personal.remove(position);
             return true;
@@ -121,19 +115,19 @@ public class GestionPersonalImpl extends UnicastRemoteObject implements GestionP
     }
 
     public boolean listaTieneEspacio(){
-        return personal.size() < 3;
+        return personal.size() < 5;
     }
 
-    public boolean IdUsuarioExiste(int id, int auxPosition){
+    public int IdUsuarioExiste(int id){
         int contador = 0;
         for (PersonalDTO tmpPersonal : personal){
             if(tmpPersonal.getId() == id){
-                auxPosition = contador;
-                return true;
+                
+                return contador;
             }
             contador ++;
         }
-        return false;
+        return -1;
     }
 
     public boolean credencialUsuarioExiste(CredencialDTO objCredencial){
@@ -146,14 +140,6 @@ public class GestionPersonalImpl extends UnicastRemoteObject implements GestionP
             contador++;
         }
         return false;
-    }
-
-    public int personalPosition(int id){
-        int position = -1;
-        if(!IdUsuarioExiste(id, position)){
-            return -1;
-        }
-        return position;
     }
 
     public PersonalDTO ocupacionBuscadaCredenciales(CredencialDTO objCredencial){
@@ -169,7 +155,7 @@ public class GestionPersonalImpl extends UnicastRemoteObject implements GestionP
         }
         return null;
     }
-    
+
     public boolean usuarioExiste(CredencialDTO objCredencial){
         String tmpUsuario=objCredencial.getUsuario();
         int contador = 0;

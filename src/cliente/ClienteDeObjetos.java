@@ -39,8 +39,9 @@ public class ClienteDeObjetos{
         int opcion = 0;
         do{
             System.out.println("==Menu Inicio==");
-            System.out.println("1. Abrir Sesion");			
-            System.out.println("2. Salir");
+            System.out.println("1. Abrir Sesion Gestores");	
+            System.out.println("2. Abrir Sesion Usuarios");			
+            System.out.println("3. Salir");
 
             opcion = UtilidadesConsola.leerEntero();
 
@@ -91,13 +92,17 @@ public class ClienteDeObjetos{
                 case 2:
                     System.out.println("Salir...");
                 break;
+
+                case 3:
+                    System.out.println("Salir...");
+                break;
                 
                 default:
                     System.out.println("Opción incorrecta");
                 break;
             }
 
-        }while(opcion != 2);
+        }while(opcion != 3);
         
     }
 
@@ -109,7 +114,9 @@ public class ClienteDeObjetos{
             System.out.println("==Menu==");
             System.out.println("1. Registrar personal");			
             System.out.println("2. Consultar personal");
-            System.out.println("3. Salir");
+            System.out.println("3. Editar personal");
+            System.out.println("4. Eliminar personal");
+            System.out.println("5. Salir");
 
             opcionAdmin = UtilidadesConsola.leerEntero();
 
@@ -122,13 +129,19 @@ public class ClienteDeObjetos{
                         Opcion2();
                         break;	
                 case 3:
+                        Opcion3();
+                        break;
+                case 4:
+                        Opcion4();
+                        break;
+                case 5:
                         System.out.println("Salir...");
                         break;
                 default:
                         System.out.println("Opción incorrecta");
             }
 
-        }while(opcionAdmin != 3);
+        }while(opcionAdmin != 5);
     }
 
 
@@ -266,10 +279,11 @@ public class ClienteDeObjetos{
                 PersonalDTO objPersonal= new PersonalDTO(varTipoIdentificacion, varId, varNombres,varOcupacion,varUsuario,varClave);
 
                 boolean valor = objRemoto2.registrarPersonal(objPersonal);
-                if(valor)
+                if(valor){
                         System.out.println("Registro realizado satisfactoriamente...");
-                else
-                        System.out.println("no se pudo realizar el registro...");
+                }else{
+                    System.out.println("no se pudo realizar el registro...");
+                }
 
             }else{
                 System.out.println("datos erroneos");
@@ -295,11 +309,104 @@ public class ClienteDeObjetos{
             id = UtilidadesConsola.leerEntero();
 
             PersonalDTO personal  = objRemoto2.consultarPersonal(id);
-            System.out.println(personal.getTipo_id());
-            System.out.println(personal.getId());
-            System.out.println(personal.getUsuario());
-            System.out.println(personal.getNombreCompleto());
-            System.out.println(personal.getOcupacion());
+
+            if(personal != null){
+                System.out.println(personal.getTipo_id());
+                System.out.println(personal.getId());
+                System.out.println(personal.getUsuario());
+                System.out.println(personal.getNombreCompleto());
+                System.out.println(personal.getOcupacion());
+            }else{
+                System.out.println("N O   E X I S T E");
+            }
+            
+        }
+        catch(RemoteException e)
+        {
+            System.out.println("La operación no se pudo completar, intente nuevamente...");
+            System.out.println("Excepcion generada: " + e.getMessage());
+        }	
+    }
+    
+
+    private static void Opcion3(){	
+        int id = -1;
+        int opcionTI = 0;
+        boolean bandera=false;
+        try
+        {
+            System.out.println("========================");
+            System.out.println("==Editar personal==");
+            System.out.println("========================");
+
+            System.out.println("Digite el id del personal a editar");
+
+            id = UtilidadesConsola.leerEntero();
+
+            PersonalDTO personal  = objRemoto2.consultarPersonal(id);
+
+            if (personal != null){
+                System.out.println(personal.getTipo_id());
+                System.out.println(personal.getId());
+                System.out.println(personal.getUsuario());
+                System.out.println(personal.getNombreCompleto());
+                System.out.println(personal.getOcupacion());
+
+                System.out.println("========================");
+                System.out.println("==Editar personal==");
+                System.out.println("========================");
+
+                System.out.println("Ingrese el nombre completo ");
+                String varNombres = UtilidadesConsola.leerCadena();
+
+                System.out.println("Ingrese la ocupacion del nuevo usuario ");
+                String varOcupacion="";
+
+                    System.out.println("==TIPO DE OCUPACION==");
+                    System.out.println("1. Secretaria");			
+                    System.out.println("2. Profesional de acondicionamiento fisico");
+                    
+
+                    opcionTI = UtilidadesConsola.leerEntero();
+
+
+                    if(opcionTI==1){
+                        varOcupacion="Secretaria";
+                    }else if(opcionTI==2){
+                        varOcupacion="Paf";
+                    }else{
+                        bandera=true;
+                    }
+
+                System.out.println("Ingrese el usuario ");
+                String varUsuario = UtilidadesConsola.leerCadena();
+
+                if (varUsuario.length()<8){
+                    bandera=true;
+                }
+
+
+                System.out.println("Ingrese la contraseña ");
+                String varClave = UtilidadesConsola.leerCadena();
+
+                if (varClave.length()<8){
+                    bandera=true;
+                }
+                if(!bandera){
+                    PersonalDTO objPersonalE= new PersonalDTO(personal.getTipo_id(), personal.getId(), varNombres,varOcupacion,varUsuario,varClave);
+                    boolean varRetorno = objRemoto2.editarPersonal(id, objPersonalE);
+                    if(varRetorno){
+                        System.out.println("Registro realizado satisfactoriamente...");
+                    }else{
+                        System.out.println("no se pudo realizar el registro...");
+                    }
+
+                }else{
+                    System.out.println("datos erroneos");
+                }
+
+            }
+            
         }
         catch(RemoteException e)
         {
@@ -308,6 +415,52 @@ public class ClienteDeObjetos{
         }	
     }
 
+    private static void Opcion4(){	
+        int id = -1;
+        boolean confirmacion;
+        try
+        {
+            System.out.println("========================");
+            System.out.println("==Borrar personal==");
+            System.out.println("========================");
+
+            System.out.println("Digite el id del personal a eliminar");
+
+            id = UtilidadesConsola.leerEntero();
+            PersonalDTO personal  = objRemoto2.consultarPersonal(id);
+
+            if(personal != null){
+                System.out.println(personal.getTipo_id());
+                System.out.println(personal.getId());
+                System.out.println(personal.getUsuario());
+                System.out.println(personal.getNombreCompleto());
+                System.out.println(personal.getOcupacion());
+            }
+            System.out.println("Digite el 1 para borrar o 0 para cancelar");
+
+            int varConf = UtilidadesConsola.leerEntero();
+
+            if(varConf==1){
+
+                confirmacion=objRemoto2.eliminarPersonal(id);
+                if (confirmacion){
+                    System.out.println("Eliminado con exito");
+                }else{
+                    System.out.println("Eliminacion fallida");
+                }
+            }else{
+                System.out.println("GRACIAS");
+            }
+
+        }
+        catch(RemoteException e)
+        {
+            System.out.println("La operación no se pudo completar, intente nuevamente...");
+            System.out.println("Excepcion generada: " + e.getMessage());
+        }	
+    }
+    
+    
     private static void Opcion1Secre(){
         try
         {
